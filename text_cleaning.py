@@ -1,7 +1,7 @@
 import re
 import unicodedata as und
-import pandas as pd
-import nltk
+# import pandas as pd
+# import nltk
 
 EXCESS_WHITE = r"( {2,}|\t+|\n+)"
 PONCTUATION  = r"[\?!,\.\":\(\)\“\”]"
@@ -14,7 +14,7 @@ def normalize_str( entry_str : str ) -> str:
     text = entry_str.lower()
 
     #----------------------------------------------------------------
-    # removing diacritics
+    # removing diacritics ã , ç -> a , c
     text = und.normalize( 'NFD' , text )
     shaved = ''.join( c for c in text if not und.combining( c ) )
     text   = und.normalize( 'NFC' , shaved )
@@ -29,7 +29,5 @@ def normalize_str( entry_str : str ) -> str:
 def remove_special_words( entry_str : str ) -> str:
     return re.sub( LINK , "" , entry_str )
 
-norm = normalize_str( "A Alemanha tornou a sentir os “benefícios” dos (i)”migrantes” da invasão islâmica." )
-print( norm )
-
-print( remove_special_words( norm ) )
+# norm = normalize_str( "não come mel, morde marimbondo" )
+# print( norm )
