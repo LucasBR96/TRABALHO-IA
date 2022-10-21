@@ -15,7 +15,7 @@ def normalize_str( entry_str : str ) -> str:
     text = entry_str.lower()
 
     #----------------------------------------------------------------
-    # removing diacritics
+    # removing diacritics ã , ç -> a , c
     text = und.normalize( 'NFD' , text )
     shaved = ''.join( c for c in text if not und.combining( c ) )
     text   = und.normalize( 'NFC' , shaved )
