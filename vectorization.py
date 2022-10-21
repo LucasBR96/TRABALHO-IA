@@ -9,8 +9,8 @@ def init_globals():
 
     global word_freq_rank , hash_freq_rank, vector_len
 
-    f = open( 'DADOS/dummy.txt' )
-    vector_len : int = int( f.readline() )
+    f = open( 'DATA/dummy.txt' )
+    vector_len = int( f.readline() )
     
     word_freq_rank = {}
     words : List[ str ]
@@ -28,7 +28,7 @@ def init_globals():
 tokenized_text = Tuple[ List[ str ] , List[ str ] ]
 def vectorize( tok : tokenized_text ) -> Iterable[ int ]:
 
-    txt_vector = np.zeros( vector_len , astype = int )
+    txt_vector = np.zeros( vector_len , dtype = int )
     words , tags = tok
 
     for word in words:
@@ -43,3 +43,14 @@ def vectorize( tok : tokenized_text ) -> Iterable[ int ]:
         txt_vector[ hash_freq_rank[ word ] + n ] = 1
     
     return txt_vector
+
+if __name__ == "__main__":
+
+    import text_cleaning as tc
+
+    s = "Emma stone devia sentir nojo dela por pegar um PRETO fedido #Oscars"
+    tok = tc.tokenize_text( tc.clear_text( s ) )
+
+    init_globals()
+    vec = vectorize( tok )
+    print( vec )
