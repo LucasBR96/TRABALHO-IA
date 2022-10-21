@@ -5,7 +5,7 @@ import pandas as pd
 import nltk
 
 EXCESS_WHITE = r"( {2,}|\t+|\n+)"
-PONCTUATION  = r"\W&&[^#]"
+PONCTUATION  = r"[^\w# ]"
 LINK         = r"(https?:?//\S+|@\w+)"
 HASHTAG      = r"(?<!\S)#\S+"
 
@@ -63,7 +63,10 @@ def tokenize_text( entry_str : str ) -> Tuple[ List[str] , List[str] ]:
 
 if __name__ == "__main__":
 
-    norm = clear_text( "ACTUALMENTE AQUELE RETARDADO QUE DEITOU NUMA BANHEIRA DE NUTELA #JOAQUINRESPONDE https://t.co/JdCLqC5zmY" )
-    print( norm )
+    norm = clear_text( "A Emma Stone podia ir vestida de saco de lixo rodeado de sacos do lixo dentro de um camião de lixo, que nunca estaria mal #Oscars" )
+    words , tags = tokenize_text( norm )
 
-    print( tokenize_text( norm ) )
+    print( len( words ) )
+    print( *words )
+    print( len( tags ) )
+    print( *tags )
