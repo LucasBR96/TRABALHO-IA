@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Tuple
 import unicodedata as und
 import pandas as pd
 import nltk
@@ -37,11 +37,11 @@ def remove_stopwords( entry_str : str ) -> str:
 
 def clear_text( entry_str : str ) -> str:
     norm : str
-    norm = remove_special_words( norm )
-    norm = normalize_str( entry_str )
+    norm = remove_special_words( entry_str )
+    norm = normalize_str( norm )
     return remove_stopwords( norm )
 
-def tokenize_text( entry_str : str ) -> tuple( List[str] , List[str] ):
+def tokenize_text( entry_str : str ) -> Tuple[ List[str] , List[str] ]:
     
     '''
     splits the clean text into common words and hashtags
@@ -61,5 +61,9 @@ def tokenize_text( entry_str : str ) -> tuple( List[str] , List[str] ):
         seq.append( word )
     return ( common_words , hash_tags )
 
-norm = clear_text( "A coisa q mais me da odio na vida é mulher machista. Qnd escuto alguma falando merda fico com mt abuso - pq odeio gnt burra e ignorante tb" )
-print( norm )
+if __name__ == "__main__":
+
+    norm = clear_text( "ACTUALMENTE AQUELE RETARDADO QUE DEITOU NUMA BANHEIRA DE NUTELA #JOAQUINRESPONDE https://t.co/JdCLqC5zmY" )
+    print( norm )
+
+    print( tokenize_text( norm ) )
