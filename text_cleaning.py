@@ -5,7 +5,7 @@ import pandas as pd
 import nltk
 
 EXCESS_WHITE = r"( {2,}|\t+|\n+)"
-PONCTUATION  = r"[^\w# ]"
+PONCTUATION  = r"[^\w#@ ]"
 LINK         = r"(https?:?//\S+|@\w+)"
 HASHTAG      = r"(?<!\S)#\S+"
 
@@ -29,13 +29,37 @@ def normalize_str( entry_str : str ) -> str:
     return text
 
 def remove_special_words( entry_str : str ) -> str:
+
+    '''
+    Removes usernames and http links
+    '''
+
     return re.sub( LINK , "" , entry_str )
 
 def remove_stopwords( entry_str : str ) -> str:
+
+    '''
+    Removes words that either dont add value to the sentence or have a secondary 
+    role in the semantics of the sentence.
+
+    ex:
+
+    >>> s = "hey amazon my package never arrived please fix asap"
+    >>> remove_stopwords( s )
+    'amazon package never arrived fix asap'
+
+    '''
+
     words : list[ str ] = entry_str.split( sep = " " )
     return " ".join( word for word in words if not( word in STOP_WORDS ) )
 
 def clear_text( entry_str : str ) -> str:
+    
+    '''
+    groups the functions 'remove_special_words', 'normalize_str' and 'remove_stopwords'
+    in one method
+    '''
+
     norm : str
     norm = remove_special_words( entry_str )
     norm = normalize_str( norm )
@@ -44,7 +68,16 @@ def clear_text( entry_str : str ) -> str:
 def tokenize_text( entry_str : str ) -> Tuple[ List[str] , List[str] ]:
     
     '''
-    splits the clean text into common words and hashtags
+    Separates regular words from hashtags from the cleaned text
+
+    ex:
+
+    >>> s = "As veias abertas da América Latina é um livro de história sombrio, escrito com emoção e de forma lírica. #literatura"
+    >>> clean_s = clear_text( s )
+    >>> clean_s
+    'veias abertas america latina livro historia sombrio escrito emocao forma lirica #literatura'
+    >>> tokenize_text( clean_s )
+    (['veias', 'abertas', 'america', 'latina', 'livro', 'historia', 'sombrio', 'escrito', 'emocao', 'forma', 'lirica'], ['literatura'])
     '''
 
     word : str
@@ -56,7 +89,7 @@ def tokenize_text( entry_str : str ) -> Tuple[ List[str] , List[str] ]:
     for word in entry_str.split():
         seq = common_words
         if word[ 0 ] == "#":
-            word = word[ 1: ]
+            word = word[ 1: ]   #if it is a hashtag the symbol "#" is no longer nescessary
             seq  = hash_tags
         seq.append( word )
     return ( common_words , hash_tags )
