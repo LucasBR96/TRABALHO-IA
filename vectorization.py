@@ -24,6 +24,8 @@ def init_globals():
     words = f.readline().split()
     for i , word in enumerate( words ):
         hash_freq_rank[ word ] = i
+    
+    f.close()
 
 tokenized_text = Tuple[ List[ str ] , List[ str ] ]
 def vectorize( tok : tokenized_text ) -> Iterable[ int ]:
