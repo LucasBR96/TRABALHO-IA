@@ -5,7 +5,7 @@ import pandas as pd
 import nltk
 
 EXCESS_WHITE = r"( {2,}|\t+|\n+)"
-PONCTUATION  = r"[^\w#@ ]"
+PONCTUATION  = r"[^a-zA-Z#@ ]"
 LINK         = r"(https?:?//\S+|@\w+)"
 HASHTAG      = r"(?<!\S)#\S+"
 
