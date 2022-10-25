@@ -4,6 +4,8 @@ import unicodedata as und
 import pandas as pd
 import nltk
 
+import sys
+
 EXCESS_WHITE = r"( {2,}|\t+|\n+)"
 PONCTUATION  = r"[^a-zA-Z#@ ]"
 LINK         = r"(https?:?//\S+|@\w+)"
@@ -96,10 +98,29 @@ def tokenize_text( entry_str : str ) -> Tuple[ List[str] , List[str] ]:
 
 if __name__ == "__main__":
 
-    norm = clear_text( "A Emma Stone podia ir vestida de saco de lixo rodeado de sacos do lixo dentro de um camião de lixo, que nunca estaria mal #Oscars" )
-    words , tags = tokenize_text( norm )
+    s : str = " ".join( sys.argv[ 1: ] )
 
-    print( len( words ) )
-    print( *words )
-    print( len( tags ) )
-    print( *tags )
+    print( "Original String")
+    print( s )
+
+    norm = remove_special_words( s )
+    print( "\nAfter removal of username and links:")
+    print( norm )
+
+    norm = normalize_str( norm )
+    print( "\nAfter normalization:")
+    print( norm )
+
+    norm = remove_stopwords( norm )
+    print( "\nAfter removing stopwords:")
+    print( norm )
+    
+    pass
+
+    # norm = clear_text( "A Emma Stone podia ir vestida de saco de lixo rodeado de sacos do lixo dentro de um camião de lixo, que nunca estaria mal #Oscars" )
+    # words , tags = tokenize_text( norm )
+
+    # print( len( words ) )
+    # print( *words )
+    # print( len( tags ) )
+    # print( *tags )
