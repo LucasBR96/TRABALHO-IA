@@ -40,17 +40,15 @@ def get_entry( pos : int ) -> Tuple[ Iterable[ int ] , int ]:
 
     return ( X , Y )
 
-def split_entries():
+def split_entries( idx_lst ):
 
     '''
     separa os indices das linhas classificadas como discurso de odio
     '''    
 
     hate_classification = df[ "hatespeech_comb" ]
-    n = len( hate_classification )
     pos_idx , neg_idx = [] , []
-
-    for i in range( n ):
+    for i in idx_lst:
         hate = hate_classification.iloc[ i ]
         if hate:
             pos_idx.append( i )
@@ -59,22 +57,41 @@ def split_entries():
 
     return pos_idx , neg_idx 
 
+def pre_sample( eval = False ):
+
+    n = len( df )
+    if eval:
+        return list( range( 0 , n , step = 5 ) )
+    return [ i for i in range( n ) if i%5 != 0 ]
+
 class HateSpeechDataset(Dataset):
 
-    def __init__( self ):
-        self.pos_idx , self.neg_idx = split_entries()
+    def __init__( self , eval = False ):
+
+        self.eval = eval
+        if eval:
+            self.idx = pre_sample( True )
+        else:
+            idx_lst = pre_sample()
+            self.pos_idx , self.neg_idx = split_entries( idx_lst )
 
     def __len__(self):
+
+        if self.eval:
+            return len( self.idx )
         return len(self.pos_idx) + len(self.neg_idx)
 
     def __getitem__(self, index):
-       
-       idx_lst = self.pos_idx if index%2 else self.neg_idx
-       n = len( idx_lst )
 
-       pd_idx = idx_lst[ index%n ]
-       X , Y = get_entry( pd_idx )
-       return tc.from_numpy( X ) , Y
+        if self.eval:
+            pd_idx = self.idx[ index ]
+        else:
+            idx_lst = self.pos_idx if index%2 else self.neg_idx
+            n = len( idx_lst )
+            pd_idx = idx_lst[ index%n ]
+
+        X , Y = get_entry( pd_idx )
+        return tc.from_numpy( X ) , Y
 
 if __name__ == "__main__":
 

@@ -4,7 +4,7 @@ import sys
 
 NUM_WORDS = 1000
 NUM_TAGS = 100
-ONLY_POS = False
+ONLY_POS = True
 
 if __name__ == '__main__':
 
