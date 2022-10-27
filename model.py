@@ -23,15 +23,15 @@ class minha_net( nn.Module ):
         self.threshold = threshold
         self.seq = nn.Sequential(
             nn.Linear( 1100 , 20 ),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear( 20 , 20 ),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear( 20 , 20 ),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear( 20 , 20 ),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear( 20 , 20 ),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear( 20 , 1 ),
             nn.Sigmoid(),
             # nn.Threshold( self.threshold , 0 )
