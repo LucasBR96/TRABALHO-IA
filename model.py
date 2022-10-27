@@ -33,7 +33,7 @@ class minha_net( nn.Module ):
             nn.Linear( 20 , 20 ),
             nn.Sigmoid(),
             nn.Linear( 20 , 1 ),
-            nn.Sigmoid(),
+            nn.Sigmoid()
             # nn.Threshold( self.threshold , 0 )
         )
     
