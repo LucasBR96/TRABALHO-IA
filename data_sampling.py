@@ -36,7 +36,7 @@ def get_entry( pos : int ) -> Tuple[ Iterable[ int ] , int ]:
     tok_text = txc.tokenize_text( clean_text )
     X = vct.vectorize( tok_text )
 
-    Y = rec['hatespeech_comb']
+    Y = float( rec['hatespeech_comb'] )
 
     return ( X , Y )
 
@@ -61,7 +61,7 @@ def pre_sample( eval = False ):
 
     n = len( df )
     if eval:
-        return list( range( 0 , n , step = 5 ) )
+        return list( range( 0 , n , 5 ) )
     return [ i for i in range( n ) if i%5 != 0 ]
 
 class HateSpeechDataset(Dataset):
@@ -74,12 +74,12 @@ class HateSpeechDataset(Dataset):
         else:
             idx_lst = pre_sample()
             self.pos_idx , self.neg_idx = split_entries( idx_lst )
-
-    def __len__(self):
+        
+    def __len__( self ):
 
         if self.eval:
             return len( self.idx )
-        return len(self.pos_idx) + len(self.neg_idx)
+        return 2*len( self.neg_idx )
 
     def __getitem__(self, index):
 
@@ -87,11 +87,12 @@ class HateSpeechDataset(Dataset):
             pd_idx = self.idx[ index ]
         else:
             idx_lst = self.pos_idx if index%2 else self.neg_idx
-            n = len( idx_lst )
-            pd_idx = idx_lst[ index%n ]
+            n = index//2
+            m = len( idx_lst )
+            pd_idx = idx_lst[ n%m ]
 
         X , Y = get_entry( pd_idx )
-        return tc.from_numpy( X ) , Y
+        return tc.from_numpy( X ).float() , Y
 
 if __name__ == "__main__":
 

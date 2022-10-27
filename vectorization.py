@@ -28,21 +28,21 @@ def init_globals():
     f.close()
 
 tokenized_text = Tuple[ List[ str ] , List[ str ] ]
-def vectorize( tok : tokenized_text ) -> Iterable[ int ]:
+def vectorize( tok : tokenized_text ) -> Iterable[ float ]:
 
-    txt_vector = np.zeros( vector_len , dtype = int )
+    txt_vector = np.zeros( vector_len )
     words , tags = tok
 
     for word in words:
         if word not in word_freq_rank:
             continue
-        txt_vector[ word_freq_rank[ word ] ] = 1
+        txt_vector[ word_freq_rank[ word ] ] = 1.
     
     n : int = len( word_freq_rank )
     for word in tags:
         if word not in hash_freq_rank:
             continue
-        txt_vector[ hash_freq_rank[ word ] + n ] = 1
+        txt_vector[ hash_freq_rank[ word ] + n ] = 1.
     
     return txt_vector
 

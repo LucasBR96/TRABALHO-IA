@@ -10,6 +10,7 @@ EXCESS_WHITE = r"( {2,}|\t+|\n+)"
 PONCTUATION  = r"[^a-zA-Z#@ ]"
 LINK         = r"(https?:?//\S+|@\w+)"
 HASHTAG      = r"(?<!\S)#\S+"
+LAUGHS       = r"(k|K){2,}"
 
 STOP_WORDS = set( nltk.corpus.stopwords.words('portuguese') )
 
@@ -36,7 +37,8 @@ def remove_special_words( entry_str : str ) -> str:
     Removes usernames and http links
     '''
 
-    return re.sub( LINK , "" , entry_str )
+    text = re.sub( LINK , "" , entry_str )
+    return re.sub( LAUGHS , "", text )
 
 def remove_stopwords( entry_str : str ) -> str:
 
