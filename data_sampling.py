@@ -67,36 +67,28 @@ def pre_sample( eval = False ):
 class HateSpeechDataset(Dataset):
 
     def __init__( self , eval = False ):
-
-        self.eval = eval
-        if eval:
-            self.idx = pre_sample( True )
-        else:
-            idx_lst = pre_sample()
-            self.pos_idx , self.neg_idx = split_entries( idx_lst )
+        
+        idx_lst = pre_sample( eval )
+        self.pos_idx , self.neg_idx = split_entries( idx_lst )
         
     def __len__( self ):
-
-        if self.eval:
-            return len( self.idx )
         return 2*len( self.neg_idx )
 
     def __getitem__(self, index):
 
-        if self.eval:
-            pd_idx = self.idx[ index ]
-        else:
-            idx_lst = self.pos_idx if index%2 else self.neg_idx
-            n = index//2
-            m = len( idx_lst )
-            pd_idx = idx_lst[ n%m ]
+        idx_lst = self.pos_idx if index%2 else self.neg_idx
+        n = index//2
+        m = len( idx_lst )
+        pd_idx = idx_lst[ n%m ]
 
         X , Y = get_entry( pd_idx )
         return tc.from_numpy( X ).float() , Y
 
 if __name__ == "__main__":
 
-    
     dataset = HateSpeechDataset()
-    dataloader = DataLoader(dataset, batch_size=20, shuffle=True)
-    print(next(iter(dataloader)))
+    dataloader = DataLoader(dataset, batch_size=20, shuffle = True)
+    
+    M , n = next(iter(dataloader))
+    print(  M.sum( axis = 1 ) )
+    print( )

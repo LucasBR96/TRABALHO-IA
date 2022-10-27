@@ -58,14 +58,14 @@ def val_step( X_val , y_val , mod , loss_fn ):
     y_hat = mod( X_val )
     return loss_fn( y_hat , y_val ) 
 
-def learning_loop( train_data , eval_data , lr = 1e-2 , batch_iters = 20 , num_batchs = 250 , verbose = True ):
+def learning_loop( train_data , eval_data , lr = 1e-4 , batch_iters = 20 , num_batchs = 250 , verbose = True ):
 
     mod = minha_net()
     loss_fn = nn.CrossEntropyLoss()
 
-    opm = torch.optim.SGD( mod.parameters() , lr = lr )
-    train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = True ) )
-    test_set =  iter( DataLoader( eval_data , batch_size = 50 , shuffle = True ) )
+    opm = torch.optim.Adam( mod.parameters() , lr = lr )
+    train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = False ) )
+    test_set =  iter( DataLoader( eval_data , batch_size = 50 , shuffle = False ) )
 
     iters = []
     t_costs = []
@@ -84,7 +84,7 @@ def learning_loop( train_data , eval_data , lr = 1e-2 , batch_iters = 20 , num_b
         try:
             X_val , y_val = next( test_set )
         except StopIteration:
-            test_set = iter( DataLoader( eval_data , batch_size = 50 , shuffle = True ) )
+            test_set = iter( DataLoader( eval_data , batch_size = 50 , shuffle = False ) )
             X_val , y_val = next( test_set )
         v_loss = val_step( X_val , y_val , mod , loss_fn )
 
