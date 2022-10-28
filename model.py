@@ -58,50 +58,58 @@ def val_step( X_val , y_val , mod , loss_fn ):
     y_hat = mod( X_val )
     return loss_fn( y_hat , y_val ) 
 
-def learning_loop( train_data , eval_data , lr = 1e-4 , batch_iters = 20 , num_batchs = 250 , verbose = True ):
+def learning_loop( train_data , eval_data , lr = 1e-4 , batch_iters = 20 , num_batchs = 5000 , verbose = True ):
 
     mod = minha_net()
     loss_fn = nn.CrossEntropyLoss()
 
-    opm = torch.optim.Adam( mod.parameters() , lr = lr )
-    train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = False ) )
-    test_set =  iter( DataLoader( eval_data , batch_size = 50 , shuffle = False ) )
+    opm = torch.optim.SGD( mod.parameters() , lr = lr )
+    train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = True ) )
+    test_set =  iter( DataLoader( eval_data , batch_size = 50 , shuffle = True ) )
 
     iters = []
     t_costs = []
     v_costs = []
     last_v_loss = sys.maxsize
     for i in range( num_batchs ):
-        for j in range( batch_iters ):
 
-            try:
-                X , y = next( train_set )
-            except StopIteration:
-                train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = True ) )
-                X , y = next( train_set )
-            t_loss = learning_step( X , y , mod , opm , loss_fn )
-        
         try:
-            X_val , y_val = next( test_set )
+            X , y = next( train_set )
         except StopIteration:
-            test_set = iter( DataLoader( eval_data , batch_size = 50 , shuffle = False ) )
-            X_val , y_val = next( test_set )
-        v_loss = val_step( X_val , y_val , mod , loss_fn )
+            train_set = iter( DataLoader( train_data , batch_size = 50 , shuffle = True ) )
+            X , y = next( train_set )
+        
+        y_prime = mod( X )
+        train_loss = loss_fn( y_prime , y )
+        opm.zero_grad()
+        train_loss.backward()
+        opm.step()
+        
+        if i == 1 or i%batch_iters == 0:
+            try:
+                X_val , y_val = next( test_set )
+            except StopIteration:
+                test_set = iter( DataLoader( eval_data , batch_size = 50 , shuffle = True ) )
+                X_val , y_val = next( test_set )
+            
+            with torch.no_grad():
+                y_hat = mod( X_val )
+                v_loss = loss_fn( y_hat , y_val )
 
-        if v_loss < last_v_loss:
-            last_v_loss = v_loss
-            torch.save(mod.state_dict(), PATH)
+                if v_loss < last_v_loss:
+                    last_v_loss = v_loss
+                    torch.save(mod.state_dict(), PATH)
 
-        iters.append( ( i + 1 )*batch_iters )
-        t_costs.append( t_loss.item() )
-        v_costs.append( v_loss.item() )
+            iters.append( i )
+            t_costs.append( train_loss.item() )
+            v_costs.append( v_loss.item() )
 
-        if verbose:
-            print( "-"*50 )
-            print( f"iteracão numero: {iters[ -1 ]}")
-            print( f"custo no treino: {t_costs[ -1]:.2f}")
-            print( f"custo na validação: {v_costs[ -1]:.2f}")
-            print()
+            if verbose:
+                print( "-"*50 )
+                print( f"iteracão numero: {iters[ -1 ]}")
+                print( f"custo no treino: {t_costs[ -1]:.2f}")
+                print( f"custo na validação: {v_costs[ -1]:.2f}")
+                print()
 
     
     return iters , t_costs , v_costs
